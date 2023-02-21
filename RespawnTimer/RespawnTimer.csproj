@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net48</TargetFramework>
+		<PlatformTarget>x64</PlatformTarget>
+		<LangVersion>10.0</LangVersion>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+		<OutputType>Library</OutputType>
+		<Platforms>AnyCPU</Platforms>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="Roles\sfko4kca.pio~" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="SynapseSL" Version="3.0.0-pre1.0" />
+	</ItemGroup>
+
+</Project>

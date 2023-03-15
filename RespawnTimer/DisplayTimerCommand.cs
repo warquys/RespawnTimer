@@ -15,8 +15,8 @@ namespace RespawnTimer
     {
         public override void Execute(SynapseContext context, ref CommandResult result)
         {
-            var newValue = !(bool)context.Player.Data[RepsawnTimerPlugin.DataKey];
-            context.Player.Data[RepsawnTimerPlugin.DataKey] = newValue;
+            var newValue = !(bool)context.Player.Data[RespawnTimerPlugin.DataKey];
+            context.Player.Data[RespawnTimerPlugin.DataKey] = newValue;
         }
     }
 }

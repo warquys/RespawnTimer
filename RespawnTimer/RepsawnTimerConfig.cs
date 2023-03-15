@@ -4,7 +4,7 @@ using Syml;
 namespace RespawnTimer;
 
 [Automatic]
-[DocumentSection("Example")]
-public class RepsawnTimerConfig : IDocumentSection
+[DocumentSection("Respawn Timer")]
+public class RespawnTimerConfig : IDocumentSection
 {
 }

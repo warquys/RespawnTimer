@@ -23,7 +23,7 @@ namespace RespawnTimer;
     Version = "1.0.0",
     Author = "VT"
 )]
-public class RepsawnTimerPlugin : ReloadablePlugin<RepsawnTimerConfig, RepsawnTimerTranslations>
+public class RepsawnTimerPlugin : ReloadablePlugin<RepsawnTimerConfig, RespawnTimerTranslations>
 {
     public const string DataKey = "RespawnTimer";
 

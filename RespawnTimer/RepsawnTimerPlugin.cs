@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using MEC;
 using Neuron.Core.Dev;
 using Neuron.Core.Events;
 using Neuron.Core.Meta;
 using Neuron.Core.Plugins;
+using Neuron.Modules.Configs.Localization;
 using PlayerRoles;
 using Respawning;
 using Synapse3.SynapseModule;
@@ -53,7 +55,7 @@ public class ExampleEventHandler : Listener
     {
         bool value;
         var dataBaseValue = ev.Player.GetData(RespawnTimerPlugin.DataKey);
-        if (!bool.TryParse(dataBaseValue, out value))
+        if (dataBaseValue == null || !bool.TryParse(dataBaseValue, out value))
         {
             value = true;
             ev.Player.SetData(RespawnTimerPlugin.DataKey, true.ToString());
@@ -77,30 +79,48 @@ public class ExampleEventHandler : Listener
     private IEnumerator<float> TimerCoroutine()
     {
         yield return Timing.WaitForSeconds(2);
+        var translations = _plugin.Translation;
+
         while (!_round.RoundEnded)
         {
             yield return Timing.WaitForSeconds(1f);
 
-            var translations = _plugin.Translation;
             var players = _player.GetPlayers(p => (p.RoleType == RoleTypeId.Spectator
                 || p.RoleType == RoleTypeId.Overwatch), PlayerType.Player);
+            
             foreach (var player in players)
             {
-                if ((bool)player.Data[RespawnTimerPlugin.DataKey])
-                    continue;
+                try 
+	            {
+                    if (!(bool)player.Data[RespawnTimerPlugin.DataKey])
+                        continue;
 
-                var message = player.GetTranslation(translations).RespawnMessage;
-                message = message.Replace("\\n", "\n");
-                var time = TimeSpan.FromSeconds(RespawnManager.Singleton._timeForNextSequence - RespawnManager.Singleton._stopwatch.Elapsed.TotalSeconds);
-                var timeTeam = _team.NextTeam == uint.MaxValue 
-                    ? time.ToString("mm\\:ss") 
-                    : $"({_team.GetTeamName(_team.NextTeam)}) {time.ToString("mm\\:ss")}";
-                var mtfTicket = Mathf.Round(RespawnTokensManager.Counters[1].Amount);
-                var chiTicket = Mathf.Round(RespawnTokensManager.Counters[0].Amount);
-                message = message.Format(timeTeam, mtfTicket, chiTicket);
-                player.SendHint(message, 1.25f);
+                    player.SendHint(GetDisplayMessage(player, translations), 1.25f);
+                }
+	            catch (Exception e)
+	            {
+                    SynapseLogger<RespawnTimerPlugin>.Error(e);
+                    yield break;
+                }   
             }
 
         }
+    }
+
+    private string GetDisplayMessage(SynapsePlayer player, RespawnTimerTranslations translations)
+    {
+        var playerTranslation =  player.GetTranslation(translations);
+
+        var message = playerTranslation.RespawnMessage;
+        message = message.Replace("\\n", "\n");
+        var time = TimeSpan.FromSeconds(RespawnManager.Singleton._timeForNextSequence - RespawnManager.Singleton._stopwatch.Elapsed.TotalSeconds);
+        
+        var timeTeam = _team.NextTeam == uint.MaxValue
+                    ? time.ToString(playerTranslation.TimeFromat)
+                    : $"({_team.GetTeamName(_team.NextTeam)}) {time.ToString(playerTranslation.TimeFromat)}";
+
+        var mtfTicket = Mathf.Round(RespawnTokensManager.Counters[1].Amount);
+        var chiTicket = Mathf.Round(RespawnTokensManager.Counters[0].Amount);
+        return message.Format(timeTeam, mtfTicket, chiTicket);
     }
 }

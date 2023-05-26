@@ -16,13 +16,14 @@ using Synapse3.SynapseModule.Map;
 using Synapse3.SynapseModule.Player;
 using Synapse3.SynapseModule.Teams;
 using UnityEngine;
+using YamlDotNet.Core.Tokens;
 
 namespace RespawnTimer;
 
 [Plugin(
     Name = "Respawn Timer",
     Description = "Add a respawn timer for the spectator",
-    Version = "1.0.0",
+    Version = "1.0.2",
     Author = "VT"
 )]
 public class RespawnTimerPlugin : ReloadablePlugin<RespawnTimerConfig, RespawnTimerTranslations>
@@ -49,23 +50,31 @@ public class EventHandler : Listener
         _team = team;
     }
 
-
     [EventHandler]
     public void Join(JoinEvent ev)
     {
-        bool value;
-        var dataBaseValue = ev.Player.GetData(RespawnTimerPlugin.DataKey);
-        if (dataBaseValue == null || !bool.TryParse(dataBaseValue, out value))
+        if (_plugin.Config.RegisterPlayerPreference)
         {
-            value = true;
-            ev.Player.SetData(RespawnTimerPlugin.DataKey, true.ToString());
+            bool value;
+            var dataBaseValue = ev.Player.GetData(RespawnTimerPlugin.DataKey);
+            if (dataBaseValue == null || !bool.TryParse(dataBaseValue, out value))
+            {
+                value = true;
+                ev.Player.SetData(RespawnTimerPlugin.DataKey, value.ToString());
+            }
+            ev.Player.Data[RespawnTimerPlugin.DataKey] = value;
         }
-        ev.Player.Data[RespawnTimerPlugin.DataKey] = value;
+        else
+        {
+            ev.Player.Data[RespawnTimerPlugin.DataKey] = true;
+        }
     }
 
     [EventHandler]
     public void Leave(LeaveEvent ev)
     {
+        if (!_plugin.Config.RegisterPlayerPreference) return;
+
         var value = ev.Player.Data[RespawnTimerPlugin.DataKey];
         ev.Player.SetData(RespawnTimerPlugin.DataKey, value.ToString());
     }

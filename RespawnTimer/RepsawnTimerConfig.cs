@@ -1,4 +1,5 @@
-﻿using Neuron.Core.Meta;
+﻿using System.ComponentModel;
+using Neuron.Core.Meta;
 using Syml;
 
 namespace RespawnTimer;
@@ -7,4 +8,6 @@ namespace RespawnTimer;
 [DocumentSection("Respawn Timer")]
 public class RespawnTimerConfig : IDocumentSection
 {
+    [Description("Use the data base to save the user preference")]
+    public bool RegisterPlayerPreference { get; set; } = false;
 }

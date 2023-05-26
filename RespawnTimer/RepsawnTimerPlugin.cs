@@ -32,7 +32,7 @@ public class RespawnTimerPlugin : ReloadablePlugin<RespawnTimerConfig, RespawnTi
 }
 
 [Automatic]
-public class ExampleEventHandler : Listener
+public class EventHandler : Listener
 {
     private readonly RespawnTimerPlugin _plugin;
     private readonly RoundService _round;
@@ -40,7 +40,7 @@ public class ExampleEventHandler : Listener
     private readonly TeamService _team;
 
 
-    public ExampleEventHandler(RespawnTimerPlugin plugin
+    public EventHandler(RespawnTimerPlugin plugin
         , RoundService round, PlayerService player, TeamService team)
     {
         _plugin = plugin;
